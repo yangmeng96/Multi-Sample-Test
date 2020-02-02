@@ -1,0 +1,67 @@
+---
+title: "gTests"
+author: "Yang Meng"
+date: "11/9/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library('gTests')
+```
+
+# Load the data
+
+```{r}
+data(example_discrete)
+```
+
+# Two sample data
+
+## Data structure
+
+```{r}
+# count in two samples
+# 720 unique values
+head(counts1)
+```
+
+## Distance
+
+```{r}
+# distance matrix of 720 unique values
+dim(ds1)
+```
+
+# Test result
+
+```{r}
+# 5-MST
+E = getGraph(counts1, ds1, 5)
+g.tests_discrete(E, counts1, test.type = 'w')
+```
+
+# Comparison
+
+```{r}
+pval = matrix(nrow = 30, ncol = 3)
+for (k in 1:30){
+  E1 = getGraph(counts1, ds1, k)
+  pval[k, 1] = g.tests_discrete(E1, counts1, test.type = 'w')$weighted$pval.approx_u
+  E2 = getGraph(counts2, ds2, k)
+  pval[k, 2] = g.tests_discrete(E2, counts2, test.type = 'w')$weighted$pval.approx_u
+  E3 = getGraph(counts3, ds3, k)
+  pval[k, 3] = g.tests_discrete(E3, counts3, test.type = 'w')$weighted$pval.approx_u
+}
+```
+
+```{r}
+plot(pval[,1], ylab = 'p-value', xlab = 'k (K-MST)')
+points(pval[,2], pch=2)
+points(pval[,3], pch=3)
+abline(h = .05)
+legend("topright", legend = c("data 1", "data 2", "data 3"),pch = 1:3)
+```
